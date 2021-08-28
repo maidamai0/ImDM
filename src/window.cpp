@@ -167,7 +167,7 @@ void Window::downloading_page() {
                     false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar);
 
   ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-  for (int i = 0; i < 200; ++i) {
+  for (int i = 0; i < 5; ++i) {
     ImGuiID child_id = ImGui::GetID((void*)(intptr_t)i);
     ImGui::BeginChild(child_id, {0, 60}, true, ImGuiWindowFlags_NoMove);
     ImGui::PushFont(make_singleton<Font>().AwesomeFont());
@@ -175,6 +175,7 @@ void Window::downloading_page() {
     ImGui::PopFont();
     ImGui::TextUnformatted("file.txt");
     ImGui::EndChild();
+    ImGui::Dummy(ImVec2{0, 20});
   }
   ImGui::PopStyleColor();
 
@@ -182,11 +183,5 @@ void Window::downloading_page() {
 }
 
 void Window::local_page() {
-  const auto size = ImGui::GetWindowSize();
-
-  ImGui::SetNextWindowPos({navigation_margin, navigation_margin * 2});
-  ImGui::BeginChild(navigation_new.c_str(), ImVec2(size.x - navigation_margin * 2, size.y - navigation_margin * 3),
-                    true, ImGuiWindowFlags_NoMove);
-  ImGui::TextUnformatted(navigation_local.c_str());
-  ImGui::EndChild();
+  downloading_page();
 }

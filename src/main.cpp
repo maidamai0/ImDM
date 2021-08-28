@@ -2,11 +2,13 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 #include "imgui/imgui.h"
-#include "stb/stb_image.h"
 
 #include "assets/droid_sans.h"
 #include "assets/icon.png.h"
+#include "font.h"
 #include "log.h"
+#include "src/singleton.h"
+#include "stb/stb_image.h"
 #include "window.h"
 
 int main(int argc, char** argv) {
@@ -46,9 +48,7 @@ int main(int argc, char** argv) {
   style.TabRounding = 5.0f;
   style.WindowRounding = 5.0f;
   style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-  ImGuiIO& io = ImGui::GetIO();
-  io.Fonts->Clear();
-  io.Fonts->AddFontFromMemoryCompressedTTF(droid_sans_compressed_data, droid_sans_compressed_size, 16);
+  make_singleton<Font>();
 
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
@@ -63,11 +63,14 @@ int main(int argc, char** argv) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+#ifndef NDEBUG
+    ImGui::ShowDemoWindow();
+#endif
+
     // background
     ImGuiWindowFlags background_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                                         ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-                                        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs |
-                                        ImGuiWindowFlags_AlwaysAutoResize;
+                                        ImGuiWindowFlags_NoBringToFrontOnFocus;
     const auto size = ImGui::GetMainViewport()->WorkSize;
     ImGui::SetNextWindowSize(size);
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -75,11 +78,12 @@ int main(int argc, char** argv) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::Begin(APP_NAME, nullptr, background_flags);
-    ImGui::End();
-    ImGui::PopStyleVar(3);
 
     // custom UI from here
     make_singleton<Window>().Show();
+
+    ImGui::End();
+    ImGui::PopStyleVar(3);
 
     ImGui::Render();
     int display_w, display_h;
